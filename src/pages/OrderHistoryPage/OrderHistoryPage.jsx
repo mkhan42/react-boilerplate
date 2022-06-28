@@ -1,7 +1,7 @@
+import React from 'react';
+
 export default function OrderHistoryPage() {
-    return (
-        <>
-            <h1>OrderHistoryPage</h1>
-        </>
-    )
-  }
+  return (
+    <h1>OrderHistoryPage</h1>
+  );
+}
