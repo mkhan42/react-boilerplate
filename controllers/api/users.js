@@ -1,10 +1,17 @@
-const User = require('../../models/user')
-const jwt = require('jsonwebtoken')
+const User = require('../../models/user');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+
 module.exports = {
-    create,
-    login
+  create,
+  login,
+  checkToken
 };
+
+function checkToken(req, res) {
+  console.log('req.user', req.user);
+  res.json(req.exp);
+}
 
 async function login(req, res) {
   try {
@@ -19,36 +26,27 @@ async function login(req, res) {
 }
 
 async function create(req, res) {
-    // res.json({
-    //     user: {
-    //         name: req.body.name,
-    //         email: req.body.email
-    //     }
-    // })
-
-    try {
-        // Add the user to the database
-        const user = await User.create(req.body);
-        // token will be a string
-        const token = createJWT(user);
-        // Yes, we can use res.json to send back just a string
-        // The client code needs to take this into consideration
+  try {
+    const user = await User.create(req.body);
+    // token will be a string
+    const token = createJWT(user);
+    // send back the token as a string
+    // which we need to account for 
+    // in the client
     res.json(token);
-        
-      } catch (err) {
-        // Client will check for non-2xx status code 
-        // 400 = Bad Request
-        res.status(400).json(err);
-      }
+  } catch (e) {
+    res.status(400).json(e);
+  }
 }
+
 
 /*-- Helper Functions --*/
 
 function createJWT(user) {
-    return jwt.sign(
-      // data payload
-      { user },
-      process.env.SECRET,
-      { expiresIn: '24h' }
-    );
-  }
+  return jwt.sign(
+    // data payload
+    { user },
+    process.env.SECRET,
+    { expiresIn: '24h' }
+  );
+}
